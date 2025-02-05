@@ -8,46 +8,55 @@ using chrono::nanoseconds;
 using chrono::duration_cast;
 using chrono::high_resolution_clock;
 
-void fillAndDisplayMatrix(int N) {
-    int matrix[N][N];
+int** allocMatrix(int size) {
+    int** matrix = new int* [size];
+    for (int i = 0; i < size; i++) {
+        matrix[i] = new int[size];
+    }
+    return matrix;
+}
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
+void fillMatrix(int** matrix, int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
             matrix[i][j] = rand() % 10;
         }
     }
+}
 
-    cout << "Матриця:" << endl;
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            cout << matrix[i][j] << " ";
-        }
-        cout << endl;
+void deleteMatrix(int** matrix, int size) {
+    for (int i = 0; i < size; i++) {
+        delete[] matrix[i];
     }
+    delete[] matrix;
+}
 
-    cout << "\nМатриця, відображена симетрично:" << endl;
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            cout << matrix[j][i] << " ";
+void compute(int** matrix, int size) {
+    auto payload_begin = high_resolution_clock::now();
+    for (int i = 0; i < size / 2; i++) {
+        for (int j = i + 1; j < size; j++) {
+            swap(matrix[i][j], matrix[j][i]);
         }
-        cout << endl;
     }
+    auto payload_end = high_resolution_clock::now();
+    auto elapsed = duration_cast<nanoseconds>(payload_end - payload_begin);
+    printf("Payload Time: %.3f seconds.\n", elapsed.count() * 1e-9);
 }
 
 int main() {
     srand(time(NULL));
 
-    int n = 0;
-    cout << "Введи розмір матриці: ";
+    int n;
+    cout << "Введіть розмір матриці: ";
     cin >> n;
 
-    auto start = high_resolution_clock::now();
-    fillAndDisplayMatrix(n);
-    auto end = high_resolution_clock::now();
+    int** matrix = allocMatrix(n);
 
-    auto duration = duration_cast<nanoseconds>(end - start);
+    fillMatrix(matrix, n);
 
-    cout << "\nЧас виконання: " << duration.count() * 1e-6 << " мілісекунд" << endl;
+    compute(matrix, n);
+
+    deleteMatrix(matrix, n);
 
     return 0;
 }
