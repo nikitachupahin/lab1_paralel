@@ -64,7 +64,7 @@ void computeParallel(int** matrix, int size, int num_threads) {
 
 void computeNotParallel(int** matrix, int size) {
     auto payload_begin = high_resolution_clock::now();
-    for (int i = 0; i < size / 2; i++) {
+    for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
             swap(matrix[i][j], matrix[j][i]);
         }
